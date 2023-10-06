@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WebApplicationKinoAPI0510.Models;
+namespace WebApplicationKinoAPI0510;
 
 public partial class Title
 {
@@ -20,4 +20,6 @@ public partial class Title
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
     public virtual ICollection<FaveList> FaveLists { get; set; } = new List<FaveList>();
+
+    public virtual ICollection<Genre> Genres { get; set; } = new List<Genre>();
 }

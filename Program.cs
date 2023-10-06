@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using WebApplicationKinoAPI0510;
-using WebApplicationKinoAPI0510.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,28 +23,133 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+
+
+
+
+
+
+
+app.MapGet("/api/users/{id}", async (int id, CommonOperations commonOperations) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    var user = await commonOperations.GetByIdAsync<User>(id);
+    if (user != null)
+    {
+        return Results.Ok(user);
+    }
+    else
+    {
+        return Results.NotFound();
+    }
+});
 
-app.MapGet("/weatherforecast", () =>
+app.MapPost("/api/users", async (User user, CommonOperations commonOperations) =>
 {
-var forecast = Enumerable.Range(1, 5).Select(index =>
-    new WeatherForecast
-    (
-        DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-        Random.Shared.Next(-20, 55),
-        summaries[Random.Shared.Next(summaries.Length)]
-    ))
-    .ToArray();
-return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+    var addedUser = await commonOperations.AddEntityAsync(user);
+    if (addedUser != null)
+    {
+        return Results.Created($"/api/users/{addedUser.Id}", addedUser);
+    }
+    else
+    {
+        return Results.BadRequest();
+    }
+});
+
+app.MapPut("/api/users/{id}", async (int id, User user, CommonOperations commonOperations) =>
+{
+    if (id != user.Id)
+    {
+        return Results.BadRequest();
+    }
+
+    var updatedUser = await commonOperations.UpdateEntityAsync(user);
+    if (updatedUser != null)
+    {
+        return Results.Ok(updatedUser);
+    }
+    else
+    {
+        return Results.BadRequest();
+    }
+});
+
+app.MapDelete("/api/users/{id}", async (int id, CommonOperations commonOperations) =>
+{
+    var user = await commonOperations.GetByIdAsync<User>(id);
+    if (user != null)
+    {
+        var result = await commonOperations.RemoveEntityAsync(user);
+        if (result == null)
+        {
+            return Results.NoContent();
+        }
+    }
+
+    return Results.NotFound();
+});
+
+app.MapGet("/api/users", async (CommonOperations commonOperations) =>
+{
+    var users = await commonOperations.GetAllAsync<User>();
+    if (users != null)
+    {
+        return Results.Ok(users);
+    }
+    else
+    {
+        return Results.NotFound();
+    }
+});
+
+app.MapGet("/api/users/search", async (string fieldName, string value, CommonOperations commonOperations) =>
+{
+    if (!string.IsNullOrEmpty(fieldName) && !string.IsNullOrEmpty(value))
+    {
+        if (fieldName == "UserName")
+        {
+            var users = await commonOperations.GetAllByFieldContainsAsync<User>(u => u.UserName, value);
+            if (users != null)
+            {
+                return Results.Ok(users);
+            }
+        }
+        else if (fieldName == "Email")
+        {
+            var users = await commonOperations.GetAllByFieldContainsAsync<User>(u => u.Email, value);
+            if (users != null)
+            {
+                return Results.Ok(users);
+            }
+        }
+        // Добавьте другие поля, если необходимо
+    }
+
+    return Results.BadRequest();
+});
 
 
 
+
+//var summaries = new[]
+//{
+//    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+//};
+
+//app.MapGet("/weatherforecast", () =>
+//{
+//var forecast = Enumerable.Range(1, 5).Select(index =>
+//    new WeatherForecast
+//    (
+//        DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+//        Random.Shared.Next(-20, 55),
+//        summaries[Random.Shared.Next(summaries.Length)]
+//    ))
+//    .ToArray();
+//return forecast;
+//})
+//.WithName("GetWeatherForecast")
+//.WithOpenApi();
 
 //app.MapPut("/api/user/create", async (KinoDb0410Context dbContext, HttpContext context) =>
 //    await CommonOperations.CreateEntityAsync<User>(context, dbContext));
@@ -187,6 +291,10 @@ return forecast;
 
 
 
+//internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+//{
+//    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+//}
 
 
 
@@ -195,7 +303,3 @@ return forecast;
 
 app.Run();
 
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

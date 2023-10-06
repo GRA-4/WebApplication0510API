@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WebApplicationKinoAPI0510.Models;
+namespace WebApplicationKinoAPI0510;
 
 public partial class Comment
 {

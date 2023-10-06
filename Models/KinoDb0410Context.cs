@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace WebApplicationKinoAPI0510.Models;
+namespace WebApplicationKinoAPI0510;
 
 public partial class KinoDb0410Context : DbContext
 {
@@ -20,8 +20,6 @@ public partial class KinoDb0410Context : DbContext
     public virtual DbSet<FaveList> FaveLists { get; set; }
 
     public virtual DbSet<Genre> Genres { get; set; }
-
-    public virtual DbSet<GenreTitle> GenreTitles { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
 
@@ -65,21 +63,28 @@ public partial class KinoDb0410Context : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.FaveLists)
                 .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_FaveList_User");
         });
 
         modelBuilder.Entity<Genre>(entity =>
         {
             entity.ToTable("Genre");
-        });
 
-        modelBuilder.Entity<GenreTitle>(entity =>
-        {
-            entity.HasKey(e => new { e.GenreId, e.TitleId });
-
-            entity.ToTable("Genre_Title");
-
-            entity.Property(e => e.GenreId).ValueGeneratedOnAdd();
+            entity.HasMany(d => d.Titles).WithMany(p => p.Genres)
+                .UsingEntity<Dictionary<string, object>>(
+                    "GenreTitle",
+                    r => r.HasOne<Title>().WithMany()
+                        .HasForeignKey("TitleId")
+                        .HasConstraintName("FK_Genre_Title_Title"),
+                    l => l.HasOne<Genre>().WithMany()
+                        .HasForeignKey("GenreId")
+                        .HasConstraintName("FK_Genre_Title_Genre"),
+                    j =>
+                    {
+                        j.HasKey("GenreId", "TitleId").HasName("PK__Genre_Ti__74D25DE6D3F00BC4");
+                        j.ToTable("Genre_Title");
+                    });
         });
 
         modelBuilder.Entity<Role>(entity =>
