@@ -14,6 +14,8 @@ builder.Services.AddDbContext<KinoDb0410Context>(options =>
 
 var app = builder.Build();
 
+
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -30,103 +32,140 @@ app.UseHttpsRedirection();
 
 
 
-app.MapGet("/api/users/{id}", async (int id, CommonOperations commonOperations) =>
-{
-    var user = await commonOperations.GetByIdAsync<User>(id);
-    if (user != null)
-    {
-        return Results.Ok(user);
-    }
-    else
-    {
-        return Results.NotFound();
-    }
-});
+//app.MapGet("/api/users/{id}", async (int id, CommonOperations commonOperations) =>
+//{
+//    var user = await commonOperations.GetByIdAsync<User>(id);
+//    if (user != null)
+//    {
+//        return Results.Ok(user);
+//    }
+//    else
+//    {
+//        return Results.NotFound();
+//    }
+//});
 
-app.MapPost("/api/users", async (User user, CommonOperations commonOperations) =>
-{
-    var addedUser = await commonOperations.AddEntityAsync(user);
-    if (addedUser != null)
-    {
-        return Results.Created($"/api/users/{addedUser.Id}", addedUser);
-    }
-    else
-    {
-        return Results.BadRequest();
-    }
-});
+//app.MapPost("/api/users", async (User user, CommonOperations commonOperations) =>
+//{
+//    var addedUser = await commonOperations.AddEntityAsync(user);
+//    if (addedUser != null)
+//    {
+//        return Results.Created($"/api/users/{addedUser.Id}", addedUser);
+//    }
+//    else
+//    {
+//        return Results.BadRequest();
+//    }
+//});
 
-app.MapPut("/api/users/{id}", async (int id, User user, CommonOperations commonOperations) =>
-{
-    if (id != user.Id)
-    {
-        return Results.BadRequest();
-    }
+//app.MapPut("/api/users/{id}", async (int id, User user, CommonOperations commonOperations) =>
+//{
+//    if (id != user.Id)
+//    {
+//        return Results.BadRequest();
+//    }
 
-    var updatedUser = await commonOperations.UpdateEntityAsync(user);
-    if (updatedUser != null)
-    {
-        return Results.Ok(updatedUser);
-    }
-    else
-    {
-        return Results.BadRequest();
-    }
-});
+//    var updatedUser = await commonOperations.UpdateEntityAsync(user);
+//    if (updatedUser != null)
+//    {
+//        return Results.Ok(updatedUser);
+//    }
+//    else
+//    {
+//        return Results.BadRequest();
+//    }
+//});
 
-app.MapDelete("/api/users/{id}", async (int id, CommonOperations commonOperations) =>
-{
-    var user = await commonOperations.GetByIdAsync<User>(id);
-    if (user != null)
-    {
-        var result = await commonOperations.RemoveEntityAsync(user);
-        if (result == null)
-        {
-            return Results.NoContent();
-        }
-    }
+//app.MapDelete("/api/users/{id}", async (int id, CommonOperations commonOperations) =>
+//{
+//    var user = await commonOperations.GetByIdAsync<User>(id);
+//    if (user != null)
+//    {
+//        var result = await commonOperations.RemoveEntityAsync(user);
+//        if (result == null)
+//        {
+//            return Results.NoContent();
+//        }
+//    }
 
-    return Results.NotFound();
-});
+//    return Results.NotFound();
+//});
 
-app.MapGet("/api/users", async (CommonOperations commonOperations) =>
-{
-    var users = await commonOperations.GetAllAsync<User>();
-    if (users != null)
-    {
-        return Results.Ok(users);
-    }
-    else
-    {
-        return Results.NotFound();
-    }
-});
+//app.MapGet("/api/users", async (CommonOperations commonOperations) =>
+//{
+//    var users = await commonOperations.GetAllAsync<User>();
+//    if (users != null)
+//    {
+//        return Results.Ok(users);
+//    }
+//    else
+//    {
+//        return Results.NotFound();
+//    }
+//});
 
-app.MapGet("/api/users/search", async (string fieldName, string value, CommonOperations commonOperations) =>
-{
-    if (!string.IsNullOrEmpty(fieldName) && !string.IsNullOrEmpty(value))
-    {
-        if (fieldName == "UserName")
-        {
-            var users = await commonOperations.GetAllByFieldContainsAsync<User>(u => u.UserName, value);
-            if (users != null)
-            {
-                return Results.Ok(users);
-            }
-        }
-        else if (fieldName == "Email")
-        {
-            var users = await commonOperations.GetAllByFieldContainsAsync<User>(u => u.Email, value);
-            if (users != null)
-            {
-                return Results.Ok(users);
-            }
-        }
-        // Добавьте другие поля, если необходимо
-    }
+//app.MapGet("/api/users/search", async (string fieldName, string value, CommonOperations commonOperations) =>
+//{
+//    if (!string.IsNullOrEmpty(fieldName) && !string.IsNullOrEmpty(value))
+//    {
+//        if (fieldName == "UserName")
+//        {
+//            var users = await commonOperations.GetAllByFieldContainsAsync<User>(u => u.UserName, value);
+//            if (users != null)
+//            {
+//                return Results.Ok(users);
+//            }
+//        }
+//        else if (fieldName == "Email")
+//        {
+//            var users = await commonOperations.GetAllByFieldContainsAsync<User>(u => u.Email, value);
+//            if (users != null)
+//            {
+//                return Results.Ok(users);
+//            }
+//        }
+//        // Добавьте другие поля, если необходимо
+//    }
 
-    return Results.BadRequest();
-});
+//    return Results.BadRequest();
+//});
+
+
+
+
+
+//app.MapGet("/api/users/search", async (HttpContext httpContext) =>
+//{
+//    // Прочитать параметры запроса из контекста запроса
+//    var fieldName = httpContext.Request.Query["fieldName"].ToString();
+//    var value = httpContext.Request.Query["value"].ToString();
+
+//    // Получить CommonOperations из сервисов приложения
+//    var commonOperations = httpContext.RequestServices.GetRequiredService<CommonOperations>();
+
+//    if (!string.IsNullOrEmpty(fieldName) && !string.IsNullOrEmpty(value))
+//    {
+//        if (fieldName == "UserName")
+//        {
+//            var users = await commonOperations.GetAllByFieldContainsAsync<User>(u => u.UserName, value);
+//            if (users != null)
+//            {
+//                return Results.Ok(users);
+//            }
+//        }
+//        else if (fieldName == "Email")
+//        {
+//            var users = await commonOperations.GetAllByFieldContainsAsync<User>(u => u.Email, value);
+//            if (users != null)
+//            {
+//                return Results.Ok(users);
+//            }
+//        }
+//        // Добавьте другие поля, если необходимо
+//    }
+
+//    return Results.BadRequest();
+//});
 
 
 
