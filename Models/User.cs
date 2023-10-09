@@ -22,4 +22,6 @@ public partial class User
     public virtual ICollection<FaveList> FaveLists { get; set; } = new List<FaveList>();
 
     public virtual Role? Role { get; set; }
+
+    public virtual ICollection<Vote> Votes { get; set; } = new List<Vote>();
 }

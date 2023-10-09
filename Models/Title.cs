@@ -15,11 +15,13 @@ public partial class Title
 
     public int? Date { get; set; }
 
-    public string? ImageUrl { get; set; }
+    public string? ImageUrl { get; set; } = "C:\\Users\\Zhekunia\\source\\repos\\NoImage.png";
 
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
     public virtual ICollection<FaveList> FaveLists { get; set; } = new List<FaveList>();
+
+    public virtual ICollection<Vote> Votes { get; set; } = new List<Vote>();
 
     public virtual ICollection<Genre> Genres { get; set; } = new List<Genre>();
 }

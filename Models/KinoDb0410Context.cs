@@ -29,14 +29,14 @@ public partial class KinoDb0410Context : DbContext
 
     public virtual DbSet<Vote> Votes { get; set; }
 
-
-
-
-
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=DESKTOP-T5P3GVP;Database=KinoDb0410;Trusted_Connection=True;TrustServerCertificate=True;");
+    {
+        optionsBuilder
+            .UseLazyLoadingProxies()        // подключение lazy loading
+            .UseSqlServer("Server=DESKTOP-T5P3GVP;Database=KinoDb0410;Trusted_Connection=True;TrustServerCertificate=True;");
+
+
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -116,18 +116,16 @@ public partial class KinoDb0410Context : DbContext
 
         modelBuilder.Entity<Vote>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Vote");
+            entity.HasKey(e => new { e.UserId, e.TitleId });
 
-            entity.HasOne(d => d.Title).WithMany()
+            entity.ToTable("Vote");
+
+            entity.HasOne(d => d.Title).WithMany(p => p.Votes)
                 .HasForeignKey(d => d.TitleId)
-                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_Vote_Title");
 
-            entity.HasOne(d => d.User).WithMany()
+            entity.HasOne(d => d.User).WithMany(p => p.Votes)
                 .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_Vote_User");
         });
 
