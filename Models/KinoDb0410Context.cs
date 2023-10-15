@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using WebApplicationKinoAPI0510.Models;
 
 namespace WebApplicationKinoAPI0510;
 
@@ -44,7 +45,10 @@ public partial class KinoDb0410Context : DbContext
         {
             entity.ToTable("Comment");
 
-            entity.Property(e => e.Date).HasColumnType("datetime");
+            entity.Property(e => e.Date)
+                .HasDefaultValueSql("('01.01.2001')")
+                .HasColumnType("datetime");
+            entity.Property(e => e.TextContent).HasDefaultValueSql("('-')");
 
             entity.HasOne(d => d.Title).WithMany(p => p.Comments)
                 .HasForeignKey(d => d.TitleId)
@@ -76,6 +80,8 @@ public partial class KinoDb0410Context : DbContext
         {
             entity.ToTable("Genre");
 
+            entity.Property(e => e.GenreName).HasDefaultValueSql("('-')");
+
             entity.HasMany(d => d.Titles).WithMany(p => p.Genres)
                 .UsingEntity<Dictionary<string, object>>(
                     "GenreTitle",
@@ -95,18 +101,31 @@ public partial class KinoDb0410Context : DbContext
         modelBuilder.Entity<Role>(entity =>
         {
             entity.ToTable("Role");
+
+            entity.Property(e => e.RoleName).HasDefaultValueSql("('-')");
         });
 
         modelBuilder.Entity<Title>(entity =>
         {
             entity.ToTable("Title");
 
-            entity.Property(e => e.TitleAdditionalName).HasColumnName("TItleAdditionalName");
+            entity.Property(e => e.Date).HasDefaultValueSql("((2020))");
+            entity.Property(e => e.Description).HasDefaultValueSql("('-')");
+            entity.Property(e => e.ImageUrl).HasDefaultValueSql("('-')");
+            entity.Property(e => e.TitleAdditionalName)
+                .HasDefaultValueSql("('-')")
+                .HasColumnName("TItleAdditionalName");
+            entity.Property(e => e.TitleName).HasDefaultValueSql("('-')");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
             entity.ToTable("User");
+
+            entity.Property(e => e.Email).HasDefaultValueSql("('-')");
+            entity.Property(e => e.ImageUrl).HasDefaultValueSql("('https://i.pinimg.com/1200x/4f/9b/61/4f9b611e72d038a4e8176709de0913d4.jpg')");
+            entity.Property(e => e.Password).HasDefaultValueSql("('-')");
+            entity.Property(e => e.UserName).HasDefaultValueSql("('-')");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)
@@ -119,6 +138,8 @@ public partial class KinoDb0410Context : DbContext
             entity.HasKey(e => new { e.UserId, e.TitleId });
 
             entity.ToTable("Vote");
+
+            entity.Property(e => e.Rating).HasDefaultValueSql("((5))");
 
             entity.HasOne(d => d.Title).WithMany(p => p.Votes)
                 .HasForeignKey(d => d.TitleId)

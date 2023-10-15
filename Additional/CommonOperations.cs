@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 
 
-namespace WebApplicationKinoAPI0510
+namespace WebApplicationKinoAPI0510.Additional
 {
     public class CommonOperations
     {
@@ -16,7 +16,7 @@ namespace WebApplicationKinoAPI0510
         }
         public CommonOperations()
         {
-            this.context = new KinoDb0410Context();
+            context = new KinoDb0410Context();
         }
 
 
